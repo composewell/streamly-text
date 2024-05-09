@@ -8,7 +8,7 @@ module Streamly.External.Text.Lazy
   )
 where
 
-import Data.Word (Word16)
+import Data.Word (Word8)
 import Streamly.Data.Array (Array)
 import System.IO.Unsafe (unsafeInterleaveIO)
 import Streamly.Data.Stream (Stream)
@@ -27,28 +27,28 @@ import Prelude hiding (read)
 
 -- | Unfold a lazy 'Text' to a stream of 'Array' 'Words'.
 {-# INLINE  chunkReader #-}
-chunkReader :: Monad m => Unfold m Text (Array Word16)
+chunkReader :: Monad m => Unfold m Text (Array Word8)
 chunkReader = Unfold step seed
   where
     seed = return
     step (Chunk bs bl) = return $ Yield (Strict.toArray bs) bl
     step Empty = return Stop
 
--- | Unfold a lazy 'Text' to a stream of Word16
+-- | Unfold a lazy 'Text' to a stream of Word8
 {-# INLINE reader #-}
-reader :: Monad m => Unfold m Text Word16
+reader :: Monad m => Unfold m Text Word8
 reader = Unfold.many Array.reader chunkReader
 
 -- XXX Should this be called readChunks?
--- | Convert a lazy 'Text' to a serial stream of 'Array' 'Word16'.
+-- | Convert a lazy 'Text' to a serial stream of 'Array' 'Word8'.
 {-# INLINE toChunks #-}
-toChunks :: Monad m => Text -> Stream m (Array Word16)
+toChunks :: Monad m => Text -> Stream m (Array Word8)
 toChunks = Stream.unfold chunkReader
 
--- | Convert a serial stream of 'Array' 'Word16' to a lazy 'Text'.
+-- | Convert a serial stream of 'Array' 'Word8' to a lazy 'Text'.
 --
 -- This function is unsafe and the onus is on the caller to check the sanity of
--- the stream of 'Array' 'Word16'.
+-- the stream of 'Array' 'Word8'.
 --
 -- IMPORTANT NOTE: This function is lazy only for lazy monads
 -- (e.g. Identity). For strict monads (e.g. /IO/) it consumes the entire input
@@ -74,17 +74,17 @@ toChunks = Stream.unfold chunkReader
 -- /unsafeFromChunks/ can then be used as,
 -- @
 -- {-# INLINE unsafeFromChunksIO #-}
--- unsafeFromChunksIO :: Stream IO (Array Word16) -> IO Text
+-- unsafeFromChunksIO :: Stream IO (Array Word8) -> IO Text
 -- unsafeFromChunksIO str = runLazy (unsafeFromChunks (Stream.hoist liftToLazy str))
 -- @
 {-# INLINE unsafeFromChunks #-}
-unsafeFromChunks :: Monad m => Stream m (Array Word16) -> m Text
+unsafeFromChunks :: Monad m => Stream m (Array Word8) -> m Text
 unsafeFromChunks = Stream.foldr chunk Empty . fmap Strict.unsafeFromArray
 
--- | Convert a serial stream of 'Array' 'Word16' to a lazy 'Text' in the
+-- | Convert a serial stream of 'Array' 'Word8' to a lazy 'Text' in the
 -- /IO/ monad.
 {-# INLINE unsafeFromChunksIO #-}
-unsafeFromChunksIO :: Stream IO (Array Word16) -> IO Text
+unsafeFromChunksIO :: Stream IO (Array Word8) -> IO Text
 unsafeFromChunksIO =
     -- Although the /IO/ monad is strict in nature we emulate laziness using
     -- 'unsafeInterleaveIO'.
