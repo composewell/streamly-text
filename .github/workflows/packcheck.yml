@@ -133,8 +133,6 @@ jobs:
             command: cabal-v2
             runner: ubuntu-latest
             cabal-version: 3.6.2.0
-            pack_options: >-
-              CABAL_PROJECT=cabal.project.d/streamly-core-0.1.0
             ignore_error: false
             pack_options: >-
               CABAL_BUILD_OPTIONS="
