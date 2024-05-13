@@ -1,0 +1,234 @@
+# packcheck-0.5.1
+# You can use any of the options supported by packcheck as environment
+# variables here.  See https://github.com/composewell/packcheck for all
+# options and their explanation.
+
+name: packcheck
+
+#-----------------------------------------------------------------------------
+# Events on which the build should be triggered
+#-----------------------------------------------------------------------------
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+
+#-----------------------------------------------------------------------------
+# Build matrix
+#-----------------------------------------------------------------------------
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+
+    env:
+      # ------------------------------------------------------------------------
+      # Common options
+      # ------------------------------------------------------------------------
+      # GHC_OPTIONS: "-Werror"
+      CABAL_REINIT_CONFIG: y
+      LC_ALL: C.UTF-8
+
+      # ------------------------------------------------------------------------
+      # What to build
+      # ------------------------------------------------------------------------
+      # DISABLE_TEST: "y"
+      # DISABLE_BENCH: "y"
+      # DISABLE_DOCS: "y"
+      # DISABLE_SDIST_BUILD: "y"
+      # DISABLE_SDIST_GIT_CHECK: "y"
+      # DISABLE_DIST_CHECKS: "y"
+
+      # ------------------------------------------------------------------------
+      # stack options
+      # ------------------------------------------------------------------------
+      # Note requiring a specific version of stack using STACKVER may fail due to
+      # github API limit while checking and upgrading/downgrading to the specific
+      # version.
+      #STACKVER: "1.6.5"
+      #STACK_UPGRADE: "y"
+      #RESOLVER: ${{ matrix.resolver }}
+
+      # ------------------------------------------------------------------------
+      # cabal options
+      # ------------------------------------------------------------------------
+      CABAL_CHECK_RELAX: y
+      CABAL_HACKAGE_MIRROR: "hackage.haskell.org:http://hackage.fpcomplete.com"
+      # CABAL_PROJECT: "cabal.project.user"
+      DISABLE_SDIST_BUILD: "n"
+
+      # ------------------------------------------------------------------------
+      # Where to find the required tools
+      # ------------------------------------------------------------------------
+      PATH: /opt/ghc/bin:/sbin:/usr/sbin:/bin:/usr/bin
+      #TOOLS_DIR: /opt
+
+      # ------------------------------------------------------------------------
+      # Location of packcheck.sh (the shell script invoked to perform CI tests ).
+      # ------------------------------------------------------------------------
+      # You can either commit the packcheck.sh script at this path in your repo or
+      # you can use it by specifying the PACKCHECK_REPO_URL option below in which
+      # case it will be automatically copied from the packcheck repo to this path
+      # during CI tests. In any case it is finally invoked from this path.
+      PACKCHECK: "./packcheck.sh"
+      # If you have not committed packcheck.sh in your repo at PACKCHECK
+      # then it is automatically pulled from this URL.
+      PACKCHECK_GITHUB_URL: "https://raw.githubusercontent.com/composewell/packcheck"
+      PACKCHECK_GITHUB_COMMIT: "ccc55fd4b895e842ca6e2d8ac63aa4acc1c3209a"
+
+      # ------------------------------------------------------------------------
+      # Final build variables
+      # ------------------------------------------------------------------------
+      PACKCHECK_COMMAND: ${{ matrix.command }} ${{ matrix.pack_options }}
+
+    runs-on: ${{ matrix.runner }}
+    continue-on-error: ${{ matrix.ignore_error }}
+    strategy:
+      fail-fast: false
+      matrix:
+
+        include:
+
+          - name: 9.8.1+streamly-core-0.2.2+text-2.1.1
+            ghc_version: 9.8.1
+            command: cabal-v2
+            runner: ubuntu-latest
+            cabal-version: 3.8.1.0
+            pack_options: >-
+              CABAL_BUILD_OPTIONS="
+              --constraint='streamly-core==0.2.2'
+              --constraint='text==2.1.1'
+              "
+            ignore_error: false
+
+          - name: 9.6.2+streamly-core-0.2.2+text-2.1
+            ghc_version: 9.6.2
+            command: cabal-v2
+            runner: ubuntu-latest
+            cabal-version: 3.8.1.0
+            ignore_error: true
+            pack_options: >-
+              CABAL_BUILD_OPTIONS="
+              --constraint='streamly-core==0.2.2'
+              --constraint='text==2.1'
+              "
+
+          - name: 9.4.4+streamly-core-0.2.1+text-2.0.2
+            ghc_version: 9.4.4
+            command: cabal-v2
+            runner: ubuntu-latest
+            cabal-version: 3.8.1.0
+            ignore_error: false
+            pack_options: >-
+              CABAL_BUILD_OPTIONS="
+              --constraint='streamly-core==0.2.1'
+              --constraint='text==2.0.2'
+              "
+
+          - name: 9.2.7+streamly-core-0.2.1+text-2.0.1
+            ghc_version: 9.2.7
+            command: cabal-v2
+            runner: ubuntu-latest
+            cabal-version: 3.6.2.0
+            pack_options: >-
+              CABAL_PROJECT=cabal.project.d/streamly-core-0.1.0
+            ignore_error: false
+            pack_options: >-
+              CABAL_BUILD_OPTIONS="
+              --constraint='streamly-core==0.2.1'
+              --constraint='text==2.0.1'
+              "
+
+          - name: 9.0.1+streamly-core-0.2.0+text-2.0
+            ghc_version: 9.0.1
+            command: cabal-v2
+            runner: ubuntu-latest
+            cabal-version: 3.2
+            ignore_error: false
+            pack_options: >-
+              CABAL_BUILD_OPTIONS="
+              --constraint='streamly-core==0.2.0'
+              --constraint='text==2.0'
+              "
+
+          - name: 8.10.7
+            ghc_version: 8.10.7
+            command: cabal-v2
+            runner: ubuntu-latest
+            cabal-version: 3.2
+            ignore_error: false
+
+          - name: 8.10.7+macOS
+            ghc_version: 8.10.7
+            command: cabal-v2
+            runner: macos-latest
+            cabal_version: 3.4
+            ignore_error: false
+
+          - name: 8.8.4
+            ghc_version: 8.8.4
+            command: cabal-v2
+            runner: ubuntu-latest
+            cabal-version: 3.2
+            ignore_error: false
+
+          - name: 8.6.5
+            ghc_version: 8.6.5
+            command: cabal-v2
+            runner: ubuntu-latest
+            cabal-version: 3.2
+            ignore_error: false
+
+          - name: hlint
+            ghc_version: 8.8.4
+            command: cabal-v2
+            runner: ubuntu-latest
+            pack_options: >-
+              HLINT_OPTIONS="lint"
+              HLINT_TARGETS="src"
+            cabal-version: 3.2
+            ignore_error: false
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: haskell/actions/setup@v1
+      with:
+        ghc-version: ${{ matrix.ghc_version }}
+
+    - uses: actions/cache@v2
+      name: Cache common directories
+      with:
+        path: |
+          ~/.cabal
+          ~/.ghc
+          ~/.local
+          ~/.stack
+        key: ${{ matrix.ghc_version }}-${{ matrix.runner }}
+
+    - name: Run installer
+      if: ${{ matrix.installer != '' }}
+      run: ${{ matrix.installer }}
+
+    - name: Setup stack
+      if: ${{ matrix.command == 'stack' }}
+      run: |
+        # required for packcheck
+        sudo apt-get install -y curl
+        # required for outbound https for stack and for stack setup
+        sudo apt-get install -y netbase xz-utils make
+
+    - name: Download packcheck
+      run: |
+        # Get packcheck if needed
+        CURL=$(which curl)
+        PACKCHECK_URL=${PACKCHECK_GITHUB_URL}/${PACKCHECK_GITHUB_COMMIT}/packcheck.sh
+        if test ! -e "$PACKCHECK"; then $CURL -sL -o "$PACKCHECK" $PACKCHECK_URL; fi;
+        chmod +x $PACKCHECK
+
+    - name: Run packcheck
+      run: |
+        bash -c "$PACKCHECK $PACKCHECK_COMMAND"
