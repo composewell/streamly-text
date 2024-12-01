@@ -43,7 +43,6 @@ test-suite test
       base >=4.7 && <5
     , text
     , hspec
-    , hspec-core
     , quickcheck-instances
     , random
     , streamly-core
