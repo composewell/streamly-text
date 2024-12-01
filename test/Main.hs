@@ -75,9 +75,9 @@ main = do
                 (pure . Strict.unsafeFromArray)
                 (pure . runIdentity)
             pipelinePropStrict
-                "Strict.unsafeWrite . Strict.reader"
+                "Strict.unsafeCreate . Strict.reader"
                 (Stream.unfold Strict.reader)
-                (Stream.fold Strict.unsafeWrite)
+                (Stream.fold Strict.unsafeCreate)
                 id
             pipelinePropLazy
                 "Lazy.unsafeFromChunks . Lazy.toChunks"
@@ -95,7 +95,7 @@ main = do
                 Lazy.unsafeFromChunks
                 (pure . runIdentity)
             pipelinePropLazy
-                "fmap Text.fromStrict . Strict.unsafeWrite . Lazy.reader"
+                "fmap Text.fromStrict . Strict.unsafeCreate . Lazy.reader"
                 (Stream.unfold Lazy.reader)
-                (fmap BSL.fromStrict . Stream.fold Strict.unsafeWrite)
+                (fmap BSL.fromStrict . Stream.fold Strict.unsafeCreate)
                 id

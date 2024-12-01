@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 module Streamly.External.Text.Lazy
   ( chunkReader
   , reader
@@ -25,6 +27,12 @@ import qualified Streamly.Data.Stream as Stream
 
 import Prelude hiding (read)
 
+#if MIN_VERSION_streamly_core(0,3,0)
+#define UNFOLD_EACH Unfold.unfoldEach
+#else
+#define UNFOLD_EACH Unfold.many
+#endif
+
 -- | Unfold a lazy 'Text' to a stream of 'Array' 'Words'.
 {-# INLINE  chunkReader #-}
 chunkReader :: Monad m => Unfold m Text (Array Word8)
@@ -37,7 +45,7 @@ chunkReader = Unfold step seed
 -- | Unfold a lazy 'Text' to a stream of Word8
 {-# INLINE reader #-}
 reader :: Monad m => Unfold m Text Word8
-reader = Unfold.many Array.reader chunkReader
+reader = UNFOLD_EACH Array.reader chunkReader
 
 -- XXX Should this be called readChunks?
 -- | Convert a lazy 'Text' to a serial stream of 'Array' 'Word8'.

@@ -9,8 +9,8 @@ module Streamly.External.Text
 
   , reader
 
-  , unsafeWriteN
-  , unsafeWrite
+  , unsafeCreateOf
+  , unsafeCreate
   )
 where
 
@@ -40,6 +40,14 @@ import Prelude hiding (read)
 #define EMPTY MBArr.empty
 #else
 #define EMPTY MBArr.nil
+#endif
+
+#if MIN_VERSION_streamly_core(0,3,0)
+#define CREATE_OF Array.createOf
+#define CREATE Array.create
+#else
+#define CREATE_OF Array.writeN
+#define CREATE Array.write
 #endif
 
 -- | Convert a 'Text' to an array of 'Word8'. It can be done in constant time.
@@ -72,11 +80,11 @@ reader :: Monad m => Unfold m Text Word8
 reader = lmap toArray Array.reader
 
 -- | Fold a stream of Word8 to a 'Text' of given size in bytes.
-{-# INLINE unsafeWriteN #-}
-unsafeWriteN :: MonadIO m => Int -> Fold m Word8 Text
-unsafeWriteN i = unsafeFromArray <$> Array.writeN i
+{-# INLINE unsafeCreateOf #-}
+unsafeCreateOf :: MonadIO m => Int -> Fold m Word8 Text
+unsafeCreateOf i = unsafeFromArray <$> CREATE_OF i
 
 -- | Fold a stream of Word8 to a 'Text' of appropriate size.
-{-# INLINE unsafeWrite #-}
-unsafeWrite :: MonadIO m => Fold m Word8 Text
-unsafeWrite = unsafeFromArray <$> Array.write
+{-# INLINE unsafeCreate #-}
+unsafeCreate :: MonadIO m => Fold m Word8 Text
+unsafeCreate = unsafeFromArray <$> CREATE
