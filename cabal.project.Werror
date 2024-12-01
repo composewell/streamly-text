@@ -1,0 +1,15 @@
+packages: streamly-text.cabal
+
+package streamly-text
+  ghc-options: -Werror
+
+source-repository-package
+   type: git
+   location: https://github.com/composewell/streamly.git
+   tag: master
+
+source-repository-package
+  type: git
+  location: https://github.com/composewell/streamly.git
+  tag: master
+  subdir: core
