@@ -9,7 +9,7 @@ module Streamly.Compat.Text
 
   , reader
 
-  , unsafeCreateOf
+  -- , unsafeCreateOf
   , unsafeCreate
   )
 where
@@ -83,9 +83,9 @@ reader :: Monad m => Unfold m Text Word8
 reader = lmap toArray Array.reader
 
 -- | Fold a stream of Word8 to a 'Text' of given size in bytes.
-{-# INLINE unsafeCreateOf #-}
-unsafeCreateOf :: MonadIO m => Int -> Fold m Word8 Text
-unsafeCreateOf i = unsafeFromArray <$> CREATE_OF i
+{-# INLINE _unsafeCreateOf #-}
+_unsafeCreateOf :: MonadIO m => Int -> Fold m Word8 Text
+_unsafeCreateOf i = unsafeFromArray <$> CREATE_OF i
 
 -- | Fold a stream of Word8 to a 'Text' of appropriate size.
 {-# INLINE unsafeCreate #-}
