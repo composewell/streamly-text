@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
 
-module Streamly.External.Text.Lazy
+module Streamly.Compat.Text.Lazy
   ( chunkReader
   , reader
 
@@ -20,7 +20,7 @@ import Data.Text.Internal.Lazy (Text(..), chunk)
 import Streamly.Internal.Data.Stream (Step(..))
 import Streamly.Internal.Data.Unfold (Unfold(..))
 
-import qualified Streamly.External.Text as Strict
+import qualified Streamly.Compat.Text as Strict
 import qualified Streamly.Data.Array as Array
 import qualified Streamly.Data.Unfold as Unfold
 import qualified Streamly.Data.Stream as Stream

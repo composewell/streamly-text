@@ -26,8 +26,8 @@ common compile-options
 
 library
   import:              compile-options
-  exposed-modules:     Streamly.External.Text
-                     , Streamly.External.Text.Lazy
+  exposed-modules:     Streamly.Compat.Text
+                     , Streamly.Compat.Text.Lazy
   build-depends:       base          >=4.7   && <5
                      , streamly-core >=0.2.0 && <0.3.1
                      , text          >=2.0   && <2.1.2

@@ -3,7 +3,7 @@
 {-# LANGUAGE MagicHash #-}
 {-# LANGUAGE BangPatterns #-}
 
-module Streamly.External.Text
+module Streamly.Compat.Text
   ( toArray
   , unsafeFromArray
 
