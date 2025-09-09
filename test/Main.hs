@@ -10,11 +10,12 @@ import Test.QuickCheck.Instances.Text ()
 import System.IO (hClose)
 import Data.Functor.Identity (Identity(..))
 
-import qualified Streamly.Internal.Data.Array as Array (castUnsafe)
+import qualified Streamly.Internal.Data.Array as Array (unsafeCast)
 
 import qualified Data.Text as BS
 import qualified Data.Text.Lazy as BSL
-import qualified Streamly.FileSystem.File as File
+import qualified Streamly.FileSystem.FileIO as File
+import qualified Streamly.FileSystem.Path as Path
 import qualified Streamly.Compat.Text as Strict
 import qualified Streamly.Compat.Text.Lazy as Lazy
 import qualified Streamly.Data.Stream as Stream
@@ -55,11 +56,12 @@ writeRead :: Int -> IO ()
 writeRead n = do
     str <- sequence $ replicate n (randomIO :: IO Char)
     let txt = BSL.pack str
-    withSystemTempFile "temp" $ \fp hdl -> do
+    withSystemTempFile "temp" $ \fp0 hdl -> do
+        fp <- Path.fromString fp0
         hClose hdl
-        let strm = fmap Array.castUnsafe $ Lazy.toChunks txt
+        let strm = fmap Array.unsafeCast $ Lazy.toChunks txt
         Stream.fold (File.writeChunks fp) strm
-        let strm1 = fmap Array.castUnsafe $ File.readChunks fp
+        let strm1 = fmap Array.unsafeCast $ File.readChunks fp
         txt1 <- Lazy.unsafeFromChunksIO strm1
         txt1 `shouldBe` txt
 
