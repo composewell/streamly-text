@@ -15,8 +15,8 @@ import qualified Streamly.Internal.Data.Array as Array (castUnsafe)
 import qualified Data.Text as BS
 import qualified Data.Text.Lazy as BSL
 import qualified Streamly.FileSystem.File as File
-import qualified Streamly.External.Text as Strict
-import qualified Streamly.External.Text.Lazy as Lazy
+import qualified Streamly.Compat.Text as Strict
+import qualified Streamly.Compat.Text.Lazy as Lazy
 import qualified Streamly.Data.Stream as Stream
 
 pipeline ::
