@@ -58,10 +58,13 @@ toArray (Text (TArr.ByteArray _) _ len)
 toArray (Text (TArr.ByteArray barr#) off8 len8) =
     Array (MutByteArray (unsafeCoerce# barr#)) off8 (off8 + len8)
 
--- | Treat an an array of 'Word8' as 'Text'. This function is unsafe and the
--- onus is on the caller to check the sanity of 'Array' 'Word8'. This function
--- unwraps the 'Array' and wraps it with 'Text' constructors and hence the
--- operation is performed in constant time.
+-- | Treat an an array of 'Word8' as 'Text'.
+--
+-- This function is unsafe: the caller must ensure that the 'Array' 'Word8' is a
+-- valid UTF-8 encoding.
+--
+-- This function unwraps the 'Array' and wraps it with 'Text' constructors and
+-- hence the operation is performed in constant time.
 {-# INLINE unsafeFromArray #-}
 unsafeFromArray :: Array Word8 -> Text
 unsafeFromArray Array {..}

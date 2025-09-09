@@ -55,8 +55,8 @@ toChunks = Stream.unfold chunkReader
 
 -- | Convert a serial stream of 'Array' 'Word8' to a lazy 'Text'.
 --
--- This function is unsafe and the onus is on the caller to check the sanity of
--- the stream of 'Array' 'Word8'.
+-- This function is unsafe: the caller must ensure that each 'Array' 'Word8'
+-- element in the stream is a valid UTF-8 encoding.
 --
 -- IMPORTANT NOTE: This function is lazy only for lazy monads
 -- (e.g. Identity). For strict monads (e.g. /IO/) it consumes the entire input
@@ -65,8 +65,8 @@ toChunks = Stream.unfold chunkReader
 --
 -- For strict monads like /IO/ you could create a newtype wrapper to make the
 -- monad bind operation lazy and lift the stream to that type using hoist, then
--- you can use this function to generate the bytestring lazily. For example you
--- can wrap the /IO/ type to make the bind lazy like this:
+-- you can use this function to generate the text lazily. For example you can
+-- wrap the /IO/ type to make the bind lazy like this:
 --
 -- @
 -- newtype LazyIO a = LazyIO { runLazy :: IO a } deriving (Functor, Applicative)
