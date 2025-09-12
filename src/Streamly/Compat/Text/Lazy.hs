@@ -1,12 +1,29 @@
 {-# LANGUAGE CPP #-}
 
-module Streamly.Compat.Text.Lazy
-  ( chunkReader
-  , reader
+-- | Efficient interoperability between
+-- <https://hackage.haskell.org/package/streamly streamly> arrays and
+-- <https://hackage.haskell.org/package/text text>.
+--
+-- The lazy 'Text' type is equivalent to a UTF-8 encoded stream of 'Array
+-- Word8' in streamly. A 'Char' stream can be converted to a UTF-8 encoded
+-- 'Word8' stream using 'Streamly.Unicode.Stream.encodeUtf8', which in turn can
+-- be written as 'Array' 'Word8'. A stream of UTF-8 encoded 'Word8' or 'Array'
+-- 'Word8' can be decoded using 'Streamly.Unicode.Stream.decodeUtf8' or
+-- 'Streamly.Unicode.Stream.decodeUtf8Chunks', respectively.
+--
+-- This module provides zero-overhead conversion between lazy 'Text' and
+-- streamly’s 'Array Word8' or 'Word8' streams.
 
-  , toChunks
+module Streamly.Compat.Text.Lazy
+  (
+  -- * Construction
+    unsafeFromChunksIO
   , unsafeFromChunks
-  , unsafeFromChunksIO
+
+  -- * Elimination
+  , reader
+  , toChunks
+  , chunkReader
   )
 where
 
@@ -33,7 +50,7 @@ import Prelude hiding (read)
 #define UNFOLD_EACH Unfold.many
 #endif
 
--- | Unfold a lazy 'Text' to a stream of 'Array' 'Words'.
+-- | Unfold a lazy 'Text' to a stream of 'Array Word8'.
 {-# INLINE  chunkReader #-}
 chunkReader :: Monad m => Unfold m Text (Array Word8)
 chunkReader = Unfold step seed
@@ -42,26 +59,25 @@ chunkReader = Unfold step seed
     step (Chunk bs bl) = return $ Yield (Strict.toArray bs) bl
     step Empty = return Stop
 
--- | Unfold a lazy 'Text' to a stream of Word8
+-- | Unfold a lazy 'Text' to a stream of 'Word8'.
 {-# INLINE reader #-}
 reader :: Monad m => Unfold m Text Word8
 reader = UNFOLD_EACH Array.reader chunkReader
 
 -- XXX Should this be called readChunks?
--- | Convert a lazy 'Text' to a serial stream of 'Array' 'Word8'.
+-- | Convert a lazy 'Text' to a stream of 'Array Word8'.
 {-# INLINE toChunks #-}
 toChunks :: Monad m => Text -> Stream m (Array Word8)
 toChunks = Stream.unfold chunkReader
 
--- | Convert a serial stream of 'Array' 'Word8' to a lazy 'Text'.
+-- | IMPORTANT NOTE: This function is lazy only for lazy monads (e.g.
+-- Identity). For strict monads (e.g. /IO/) it consumes the entire input before
+-- generating the output. For /IO/ monad use 'unsafeFromChunksIO' instead.
 --
--- This function is unsafe: the caller must ensure that each 'Array' 'Word8'
--- element in the stream is a valid UTF-8 encoding.
+-- Convert a stream of 'Array' 'Word8' to a lazy 'Text'.
 --
--- IMPORTANT NOTE: This function is lazy only for lazy monads
--- (e.g. Identity). For strict monads (e.g. /IO/) it consumes the entire input
--- before generating the output. For /IO/ monad please use unsafeFromChunksIO
--- instead.
+-- Unsafe because the caller must ensure that each 'Array Word8'
+-- in the stream is UTF-8 encoded and terminates at Char boundary.
 --
 -- For strict monads like /IO/ you could create a newtype wrapper to make the
 -- monad bind operation lazy and lift the stream to that type using hoist, then
@@ -80,6 +96,7 @@ toChunks = Stream.unfold chunkReader
 -- @
 --
 -- /unsafeFromChunks/ can then be used as,
+--
 -- @
 -- {-# INLINE unsafeFromChunksIO #-}
 -- unsafeFromChunksIO :: Stream IO (Array Word8) -> IO Text
@@ -89,8 +106,11 @@ toChunks = Stream.unfold chunkReader
 unsafeFromChunks :: Monad m => Stream m (Array Word8) -> m Text
 unsafeFromChunks = Stream.foldr chunk Empty . fmap Strict.unsafeFromArray
 
--- | Convert a serial stream of 'Array' 'Word8' to a lazy 'Text' in the
+-- | Convert a stream of 'Array Word8' to a lazy 'Text' in the
 -- /IO/ monad.
+--
+-- Unsafe because the caller must ensure that each 'Array Word8'
+-- in the stream is UTF-8 encoded and terminates at Char boundary.
 {-# INLINE unsafeFromChunksIO #-}
 unsafeFromChunksIO :: Stream IO (Array Word8) -> IO Text
 unsafeFromChunksIO =
