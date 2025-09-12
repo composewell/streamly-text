@@ -3,6 +3,7 @@ name:                streamly-text
 version:             0.1.0
 synopsis:            Library for streamly and text interoperation.
 description:         Please see the README on GitHub at <https://github.com/composewell/streamly-text>
+category:            Streamly, Stream, Array, Text
 license:             BSD-3-Clause
 license-file:        LICENSE
 author:              Composewell Technologies
