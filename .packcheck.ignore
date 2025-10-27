@@ -2,3 +2,7 @@
 .github/workflows/packcheck.yml
 .gitignore
 cabal.project.Werror
+flake.lock
+flake.nix
+packages.nix
+sources.nix
