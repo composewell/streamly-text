@@ -31,9 +31,13 @@ library
   import:              compile-options
   exposed-modules:     Streamly.Compat.Text
                      , Streamly.Compat.Text.Lazy
-  build-depends:       base          >=4.7   && <5
-                     , streamly-core >=0.2.0 && <0.3.1
-                     , text          >=2.0   && <2.1.4
+  build-depends:       base          >=4.7   && < 5
+                     -- Should use minor versions as we depend on text
+                     -- internals, but in practice it is more hassle and
+                     -- little benefit. We can revise it on hackage if
+                     -- it ever becomes a problem.
+                     , streamly-core >=0.2.0 && < 0.3
+                     , text          >=2.0   && < 2.2
   hs-source-dirs:      src
   default-language:    Haskell2010
 
