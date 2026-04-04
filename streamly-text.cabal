@@ -1,6 +1,6 @@
 cabal-version:       2.4
 name:                streamly-text
-version:             0.1.0
+version:             0.1.0.1
 synopsis:            Library for streamly and text interoperation.
 description:         Please see the README on GitHub at <https://github.com/composewell/streamly-text>
 category:            Streamly, Stream, Array, Text
