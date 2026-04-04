@@ -1,3 +1,8 @@
-# Revision history for streamly-text
+## 0.1.0.1
 
-* First version. Released on an unsuspecting world.
+* Update documentation
+* Allow streamly 0.3.0 and text
+
+## 0.1.0
+
+* Initial release
