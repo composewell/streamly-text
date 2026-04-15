@@ -1,13 +1,15 @@
 cabal-version:       2.4
 name:                streamly-text
 version:             0.1.1
-synopsis:            Convert streamly Array type to Text type and vice versa.
+synopsis: Efficient conversion between Streamly Arrays and Text
 description:
-  No overhead interoperability between the @Array@ type from the
+  Zero-overhead interoperability between the @Array@ type from the
   @streamly-core@ package and the @Text@ type from the @text@ package.
   .
-  Please see the README at <https://github.com/composewell/streamly-text> for
-  more details.
+  Provides efficient conversion in both directions without copying.
+  .
+  Please see the README at <https://github.com/composewell/streamly-text>
+  for more details.
 category:            Streamly, Stream, Array, Text
 license:             BSD-3-Clause
 license-file:        LICENSE
