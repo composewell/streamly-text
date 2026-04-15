@@ -4,15 +4,23 @@
 -- <https://hackage.haskell.org/package/streamly streamly> arrays and
 -- <https://hackage.haskell.org/package/text text>.
 --
--- The lazy 'Text' type is equivalent to a UTF-8 encoded stream of 'Array
--- Word8' in streamly. A 'Char' stream can be converted to a UTF-8 encoded
--- 'Word8' stream using 'Streamly.Unicode.Stream.encodeUtf8', which in turn can
--- be written as 'Array' 'Word8'. A stream of UTF-8 encoded 'Word8' or 'Array'
--- 'Word8' can be decoded using 'Streamly.Unicode.Stream.decodeUtf8' or
--- 'Streamly.Unicode.Stream.decodeUtf8Chunks', respectively.
---
 -- This module provides zero-overhead conversion between lazy 'Text' and
 -- streamly’s 'Array Word8' or 'Word8' streams.
+--
+-- In streamly we work with explicit streams instead of lazy types.
+-- The lazy 'Text' type is equivalent to a stream of UTF-8 encoded 'Array
+-- Word8' in streamly.
+--
+-- The 'Array Word8' types in a stream can be rewrapped as Text types and
+-- converted into lazy Text. Similarly, the Text chunks in a lazy Text type can
+-- be rewrapped as 'Array Word8' and yielded as a stream.
+--
+-- When working with streams we can work directly with Char streams or with
+-- streams of encoded chunks of char sequences i.e. 'Array Word8'. A 'Char'
+-- stream can be converted to UTF-8 encoded 'Word8' stream using 'encodeUtf8'
+-- from 'Streamly.Unicode.Stream' which in turn can be written as 'Array
+-- Word8', and a stream of UTF-8 encoded 'Word8' or 'Array Word8' can be
+-- decoded using 'decodeUtf8' or 'decodeUtf8Chunks'.
 
 module Streamly.Compat.Text.Lazy
   (

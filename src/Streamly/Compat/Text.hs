@@ -7,15 +7,13 @@
 -- <https://hackage.haskell.org/package/streamly streamly> arrays and
 -- <https://hackage.haskell.org/package/text text>.
 --
--- The strict 'Text' type is equivalent to a UTF-8 encoded 'Array' 'Word8' in
--- streamly. A 'Char' stream can be converted to a UTF-8 encoded 'Word8' stream
--- using 'Streamly.Unicode.Stream.encodeUtf8', which in turn can
--- be written as 'Array' 'Word8'. A stream of UTF-8 encoded 'Word8' or
--- 'Array' 'Word8' can be decoded using 'Streamly.Unicode.Stream.decodeUtf8' or
--- 'Streamly.Unicode.Stream.decodeUtf8Chunks', respectively.
---
 -- This module provides zero-overhead conversion between strict 'Text'
--- and streamly’s 'Word8' streams or 'Array' 'Word8'.
+-- and streamly’s 'Word8' streams or 'Array' 'Word8' type.
+--
+-- In streamy we either work directly with 'Word8' streams or 'Array' of
+-- 'Word8'. The strict 'Text' type is equivalent to a UTF-8 encoded 'Array
+-- Word8' in Streamly, the underlying types are compatible so we just need to
+-- rewrap it to interconvert.
 
 module Streamly.Compat.Text
   (
@@ -74,9 +72,9 @@ toArray (TextInternal.Text (TArr.ByteArray _) _ len)
 toArray (TextInternal.Text (TArr.ByteArray barr#) off8 len8) =
     ArrayInternal.Array (MBArrInternal.MutByteArray (unsafeCoerce# barr#)) off8 (off8 + len8)
 
--- | Treat an an array of 'Word8' as 'Text'.
+-- | Treat an array of 'Word8' as 'Text'.
 --
--- This function is unsafe: the caller must ensure that the 'Array' 'Word8' is a
+-- This function is unsafe: the caller must ensure that the 'Array' 'Word8' has a
 -- valid UTF-8 encoding.
 --
 -- This function unwraps the 'Array' and wraps it with 'Text' constructors and
