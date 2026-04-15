@@ -1,8 +1,8 @@
-## 0.1.0.1
+## 0.1.1 (Apr 2026)
 
 * Update documentation
-* Allow streamly 0.3.0 and text
+* Allow streamly-core 0.3.0 and text 2.2
 
-## 0.1.0
+## 0.1.0 (Sep 2025)
 
 * Initial release
