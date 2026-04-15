@@ -30,21 +30,22 @@ module Streamly.Compat.Text
 where
 
 import Control.Monad.IO.Class (MonadIO)
+import Data.Text (Text)
 import Data.Word (Word8)
 import GHC.Exts (unsafeCoerce#)
+import Streamly.Data.Array (Array)
 import Streamly.Data.Fold (Fold)
 import Streamly.Data.Unfold (Unfold, lmap)
 
 import qualified Data.Text as T
 import qualified Data.Text.Array as TArr
+import qualified Streamly.Data.Array as Array
 
 -- Internal imports
-import Data.Text.Internal (Text(..))
-import Streamly.Internal.Data.Array (Array(..))
-import Streamly.Internal.Data.MutByteArray (MutByteArray(..))
-
-import qualified Streamly.Data.Array as Array
-import qualified Streamly.Internal.Data.MutByteArray as MBArr
+-- Tracks all the places where we are using internals of Text
+import qualified Data.Text.Internal as TextInternal
+import qualified Streamly.Internal.Data.Array as ArrayInternal
+import qualified Streamly.Internal.Data.MutByteArray as MBArrInternal
 
 import Prelude hiding (read)
 
@@ -52,9 +53,9 @@ import Prelude hiding (read)
 -- For text < 2 we need to consider utf16 encoding.
 
 #if MIN_VERSION_streamly_core(0,2,2)
-#define EMPTY MBArr.empty
+#define EMPTY MBArrInternal.empty
 #else
-#define EMPTY MBArr.nil
+#define EMPTY MBArrInternal.nil
 #endif
 
 #if MIN_VERSION_streamly_core(0,3,0)
@@ -68,10 +69,10 @@ import Prelude hiding (read)
 -- | Convert a 'Text' to an array of 'Word8'. It can be done in constant time.
 {-# INLINE toArray #-}
 toArray :: Text -> Array Word8
-toArray (Text (TArr.ByteArray _) _ len)
-    | len == 0 = Array EMPTY 0 0
-toArray (Text (TArr.ByteArray barr#) off8 len8) =
-    Array (MutByteArray (unsafeCoerce# barr#)) off8 (off8 + len8)
+toArray (TextInternal.Text (TArr.ByteArray _) _ len)
+    | len == 0 = ArrayInternal.Array EMPTY 0 0
+toArray (TextInternal.Text (TArr.ByteArray barr#) off8 len8) =
+    ArrayInternal.Array (MBArrInternal.MutByteArray (unsafeCoerce# barr#)) off8 (off8 + len8)
 
 -- | Treat an an array of 'Word8' as 'Text'.
 --
@@ -82,15 +83,15 @@ toArray (Text (TArr.ByteArray barr#) off8 len8) =
 -- hence the operation is performed in constant time.
 {-# INLINE unsafeFromArray #-}
 unsafeFromArray :: Array Word8 -> Text
-unsafeFromArray Array {..}
+unsafeFromArray ArrayInternal.Array {..}
     | len8 == 0 = T.empty
-    | otherwise = Text (TArr.ByteArray (unsafeCoerce# marr#)) off8 len8
+    | otherwise = TextInternal.Text (TArr.ByteArray (unsafeCoerce# marr#)) off8 len8
 
     where
 
     len8 = arrEnd - arrStart
     off8 = arrStart
-    !(MutByteArray marr#) = arrContents
+    !(MBArrInternal.MutByteArray marr#) = arrContents
 
 -- | Unfold a 'Text' to a stream of Word8.
 {-# INLINE reader #-}
