@@ -1,7 +1,7 @@
 cabal-version:       2.4
 name:                streamly-text
 version:             0.1.1
-synopsis: Efficient conversion between Streamly Arrays and Text
+synopsis: Convert between Streamly Array and Text
 description:
   Zero-overhead interoperability between the @Array@ type from the
   @streamly-core@ package and the @Text@ type from the @text@ package.
